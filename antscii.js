@@ -24,6 +24,8 @@ function render(){
 
 function generateWorld(){
 
+	// Generate ground level
+
 	var groundLevel = 1/4;
 	var groundVariance = 0.02;
 
@@ -60,6 +62,8 @@ function generateWorld(){
 		}
 	}
 
+	// Generate grass
+
 	var grassChars = ["/", "\\", "V", "v", "|", ","];
 	var grassProbability = 0.8;
 	
@@ -74,9 +78,112 @@ function generateWorld(){
 			}
 		}
 	}
+
+	// Generate rocks
+
+	var iterations = 30;
+	var seedProbability = 0.001;
+	var growProbability = 0.1;
+
+	for(var i = 0; i < iterations; i++){
+
+		for(var y = 0; y < height; y++){
+			for(var x = 0; x < width; x++){
+
+				if(Math.random() < seedProbability * Math.pow((y/height), 4) && world[y][x].type == "dirt"){
+					world[y][x] = {
+						 type: "rock"
+						,char: "█"
+					};
+				}
+
+				if(getTile(y, x).type == "dirt"){
+					var prob = 0;
+					if(getTile(y-1, x).type == "rock"){
+						prob += growProbability;
+					}
+					if(getTile(y+1, x).type == "rock"){
+						prob += growProbability;
+					}
+					if(getTile(y, x-1).type == "rock"){
+						prob += growProbability;
+					}
+					if(getTile(y, x+1).type == "rock"){
+						prob += growProbability;
+					}
+
+					if(Math.random() < prob){
+						world[y][x] = {
+							 type: "rock"
+							,char: "█"
+						};
+					}
+				}
+			}
+		}
+
+	}
+
+	// Generate caves
+
+	var iterations = 30;
+	var seedProbability = 0.0001;
+	var growProbability = 0.05;
+	var xGrowth = 0.5;
+	var yGrowth = 1.5;
+
+	for(var i = 0; i < iterations; i++){
+
+		for(var y = 0; y < height; y++){
+			for(var x = 0; x < width; x++){
+
+				if(Math.random() < seedProbability && world[y][x].type == "dirt"){
+					world[y][x] = {
+						 type: "cave"
+						,char: "░"
+					};
+				}
+
+				if(getTile(y, x).type == "dirt"){
+					var prob = 0;
+					if(getTile(y-1, x).type == "cave"){
+						prob += growProbability*yGrowth;
+					}
+					if(getTile(y+1, x).type == "cave"){
+						prob += growProbability*yGrowth;
+					}
+					if(getTile(y, x-1).type == "cave"){
+						prob += growProbability*xGrowth;
+					}
+					if(getTile(y, x+1).type == "cave"){
+						prob += growProbability*xGrowth;
+					}
+
+					if(Math.random() < prob){
+						world[y][x] = {
+							 type: "cave"
+							,char: "░"
+						};
+					}
+				}
+			}
+		}
+
+	}
 	
 }
 
 function selectRandomly(arr){
 	return(arr[~~(Math.random()*arr.length)]);
+}
+
+function getTile(y, x){
+	if(world[y] && world[y][x]){
+		return world[y][x];
+	} else {
+		return {
+			 type: "void"
+			,char: "?"
+		};
+	}
 }
