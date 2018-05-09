@@ -1,0 +1,12 @@
+*{
+	border: none;
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
+}
+
+#renderContainer{
+	font-family: monospace;
+	line-height: 1em;
+	white-space: pre;
+}
